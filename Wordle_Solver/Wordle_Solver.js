@@ -102,6 +102,15 @@ function errorHandler(strError) {
   $('#possibilities').show();
 }//errorHandler
 
+function isLowerCase(char) {
+  var charCode = char.charCodeAt(0);
+  if(charCode >= "a".charCodeAt(0) && charCode <= "z".charCodeAt(0)){
+    return true;
+  } else {
+    return false;
+  } 
+}//isLowerCase
+
 function solveIt() {
   console.log('Solve it!');
   $('#help-outer').hide();                                                              //hide help div
@@ -121,6 +130,13 @@ function solveIt() {
     guessWord = '';
     aryExcludeLetters.length=0;
     mapIncludeLetters.clear();
+    mapIncludeLettersWorking.clear();
+    console.log(String("mapIncludeLetters.length:").concat(mapIncludeLetters.length))
+    for (let wordPos=0; wordPos<5;wordPos++) {
+      if (isLowerCase(aryPatternLetters[wordPos])){
+        aryPatternLetters[wordPos]="*";
+      }
+    }
     for (let letterPosition = 1; letterPosition <= 5; letterPosition++) {
       const gridCoord = '#guess_' + guessPosition + '_' + letterPosition;
       const gridCoordBColor = $(gridCoord).css('background-color');
@@ -136,7 +152,7 @@ function solveIt() {
       // I think we might have to convert this to a Map so we can keep track of how many yellow letters there are WMCDEBUG
       } else if (gridCoordBColor === 'rgb(181, 159, 59)') {  //is it Yellow?
         //if (!aryIncludeLetters.includes(letter)) {
-        aryPatternLetters[letterPosition - 1] = "@";
+        aryPatternLetters[letterPosition - 1] = letter.toLowerCase();
         mapIncludeLetters.set(letter, (mapIncludeLetters.get(letter) ?? 0) + 1);
         console.log(String("yellow letter: ").concat(letter,mapIncludeLetters.get(letter))) //WMCDEBUG
         //aryIncludeLetters2D.push([letter, letterPosition - 1]);
@@ -169,23 +185,23 @@ function solveIt() {
         let boolExclude = Boolean(false);                               //true if word excludes all exclude letters
         let boolInclude = Boolean(false);                               //true if word includes any include letter
         //WMCDEBUG RESUME HERE
-        if ((aryPatternLetters[0] === '*') || (aryPatternLetters[0] === '@') || (word.substring(0, 1) === aryPatternLetters[0])) {
+        if ((aryPatternLetters[0] === '*') || (isLowerCase(aryPatternLetters[0])) || (word.substring(0, 1) === aryPatternLetters[0])) {
           if (word.substring(0, 1) === aryPatternLetters[0]) {
             workingCopy = String("*").concat(workingCopy.substring(1));
           } //if
-          if ((aryPatternLetters[1] === '*') || (aryPatternLetters[1] === '@') || (word.substring(1, 2) === aryPatternLetters[1])) {
+          if ((aryPatternLetters[1] === '*') || (isLowerCase(aryPatternLetters[1])) || (word.substring(1, 2) === aryPatternLetters[1])) {
             if (word.substring(1, 2) === aryPatternLetters[1]) {
               workingCopy = workingCopy.substring(0,1).concat("*",workingCopy.substring(2));
             } //if
-            if ((aryPatternLetters[2] === '*') || (aryPatternLetters[2] === '@') || (word.substring(2, 3) === aryPatternLetters[2])) {
+            if ((aryPatternLetters[2] === '*') || (isLowerCase(aryPatternLetters[2])) || (word.substring(2, 3) === aryPatternLetters[2])) {
               if (word.substring(2, 3) === aryPatternLetters[2]) {
                 workingCopy = workingCopy.substring(0,2).concat("*",workingCopy.substring(3));
               } //if
-              if ((aryPatternLetters[3] === '*') || (aryPatternLetters[3] === '@') || (word.substring(3, 4) === aryPatternLetters[3])) {
+              if ((aryPatternLetters[3] === '*') || (isLowerCase(aryPatternLetters[3])) || (word.substring(3, 4) === aryPatternLetters[3])) {
                 if (word.substring(3, 4) === aryPatternLetters[3]) {
                   workingCopy = workingCopy.substring(0,3).concat("*",workingCopy.substring(4));
                 } //if
-                if ((aryPatternLetters[4] === '*') || (aryPatternLetters[4] === '@') || (word.substring(4, 5) === aryPatternLetters[4])) {
+                if ((aryPatternLetters[4] === '*') || (isLowerCase(aryPatternLetters[4])) || (word.substring(4, 5) === aryPatternLetters[4])) {
                   if (word.substring(4, 5) === aryPatternLetters[4]) {
                     workingCopy = workingCopy.substring(0,4).concat("*");
                   } //if
@@ -215,13 +231,15 @@ function solveIt() {
                   for (const [key,value] of mapIncludeLetters.entries()) {
                     mapIncludeLettersWorking.set(key,value);
                   }
-
+                  if (String("PLEAT").localeCompare(word)===0) {
+                    console.log(String("YELLOW LETTER SEARCH: ").concat(word));
+                  }//if
                   //iterate through yellow letters, and make sure all are included in the test word
                   for ( [letter,count] of mapIncludeLettersWorking.entries()) {
                     for (let wordPos = 0; wordPos<5; wordPos++) {
-                      console.log(String("starting yellow letter search: ").concat(workingCopy,"; wordPos: ",wordPos,"; searchLetter: ",workingCopy.substring(wordPos,wordPos+1))); //WMCDEBUG
+                      console.log(String("starting yellow letter search: ").concat(workingCopy,"; yellow letter:",letter,"; patternLetter:",aryPatternLetters[wordPos],"wordPos: ",wordPos,"; wordLetter: ",workingCopy.substring(wordPos,wordPos+1))); //WMCDEBUG
                       //check if the current yellow letter is in the word being evaluated, and that it does not correspond to a previous yellow letter position
-                      if ((workingCopy.substring(wordPos,wordPos+1) === letter) && (aryPatternLetters[wordPos]!="@")){
+                      if ((workingCopy.substring(wordPos,wordPos+1) === letter) && (aryPatternLetters[wordPos]!=letter.toLowerCase())){
                         console.log(String("Matched Yellow Letter"));
                         if (count > 0) {
                           count = count - 1;
@@ -262,7 +280,7 @@ function solveIt() {
             }//if
           }//if
         }//if
-        if (String("ACUTE").localeCompare(word)===0) {
+        if (String("PLEAT").localeCompare(word)===0) {
           console.log(String("WORD PROCESSED: ").concat(word));
         }//if
       }//for
