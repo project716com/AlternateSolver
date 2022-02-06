@@ -155,6 +155,9 @@ function solveIt() {
         //if (!aryIncludeLetters.includes(letter)) {
         aryPatternLetters[letterPosition - 1] = letter.toLowerCase();
         mapIncludeLetters.set(letter, (mapIncludeLetters.get(letter) ?? 0) + 1);
+        if (!aryExcludeLetters.includes(letter)) {  //also include this letter in the Exclude because it should not occur as grey unless there should be no more of that letter
+          aryExcludeLetters.push(letter);
+        };//if
         console.log(String("yellow letter: ").concat(letter,mapIncludeLetters.get(letter))) //WMCDEBUG
         //aryIncludeLetters2D.push([letter, letterPosition - 1]);
         //};//if
@@ -232,16 +235,21 @@ function solveIt() {
                   for (const [key,value] of mapIncludeLetters.entries()) {
                     mapIncludeLettersWorking.set(key,value);
                   }
-                  if (String("PLEAT").localeCompare(word)===0) {
+                  if (String("EAGLE").localeCompare(word)===0) {
                     console.log(String("YELLOW LETTER SEARCH: ").concat(word));
                   }//if
                   //iterate through yellow letters, and make sure all are included in the test word
                   for ( [letter,count] of mapIncludeLettersWorking.entries()) {
                     for (let wordPos = 0; wordPos<5; wordPos++) {
-                      console.log(String("starting yellow letter search: ").concat(workingCopy,"; yellow letter:",letter,"; patternLetter:",aryPatternLetters[wordPos],"wordPos: ",wordPos,"; wordLetter: ",workingCopy.substring(wordPos,wordPos+1))); //WMCDEBUG
+                      if (String("EAGLE").localeCompare(word)===0) {
+                        console.log(String("starting yellow letter search: ").concat(workingCopy,"; yellow letter:",letter,"; patternLetter:",aryPatternLetters[wordPos],"wordPos: ",wordPos,"; wordLetter: ",workingCopy.substring(wordPos,wordPos+1))); //WMCDEBUG
+                      }//if
+                      
                       //check if the current yellow letter is in the word being evaluated, and that it does not correspond to a previous yellow letter position
                       if ((workingCopy.substring(wordPos,wordPos+1) === letter) && (aryPatternLetters[wordPos]!=letter.toLowerCase())){
-                        console.log(String("Matched Yellow Letter"));
+                        if (String("EAGLE").localeCompare(word)===0) {
+                          console.log(String("Matched Yellow Letter"));
+                        }//if
                         if (count > 0) {
                           count = count - 1;
                           mapIncludeLettersWorking.set(letter,count);
