@@ -80,7 +80,8 @@ function inputClicked(evt) {
   }//if
   $previousClickedInput = $(evt.target);                                          //record current input as clicked
 }//inputClicked()
-function initialize() {                                                           //set default selections
+function initialize() {    
+  $('#version').html('v' + version);                                                    //set default selections
   $('#possibilities').hide();
   $('#words').hide();
   console.log('number of 5-letter words: ' + numFiveLetterWords.toLocaleString());//kick off some console activity
